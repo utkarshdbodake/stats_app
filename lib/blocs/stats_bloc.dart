@@ -24,8 +24,13 @@ class StatsBloc {
   Stream<int> get timestampStream => _timestampBehaviourSubject.stream;
   final BehaviorSubject<StatisticsState> _statisticsBehaviourSubject = BehaviorSubject<StatisticsState>();
   Stream<StatisticsState> get statisticsStream => _statisticsBehaviourSubject.stream;
+  final BehaviorSubject<bool> _isLoadingBehaviourSubject = BehaviorSubject<bool>();
+  Stream<bool> get isLoadingStateStream => _isLoadingBehaviourSubject.stream;
 
   StatsBloc() {
+
+    // Trigger the 1st fetch of stats.
+    _fetchStatsStream.add(null);
 
     _amountStream.stream.listen((double amount) => this.amount = amount);
 
@@ -36,9 +41,11 @@ class StatsBloc {
     });
 
     _fetchStatsStream.stream.listen((_) {
+      _updateIsLoadingState(true);
       print('Fetching stats...');
       StatsDao.getStats().then((StatisticsState statisticsState) {
             _statisticsBehaviourSubject.add(statisticsState);
+            _updateIsLoadingState(false);
       });
     });
 
@@ -49,12 +56,17 @@ class StatsBloc {
     });
   }
 
+  void _updateIsLoadingState(bool value) {
+    _isLoadingBehaviourSubject.add(value);
+  }
+
   void dispose() {
     _amountStream.close();
     _transactionFormSubmitStream.close();
     _timestampBehaviourSubject.close();
     _fetchStatsStream.close();
     _statisticsBehaviourSubject.close();
+    _isLoadingBehaviourSubject.close();
   }
 }
 

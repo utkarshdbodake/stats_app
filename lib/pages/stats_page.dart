@@ -121,12 +121,99 @@ class StatsMainPage extends StatelessWidget {
     );
   }
 
+  Widget getStatsNumbers(StatsBloc statsBloc) {
+    List colors = [Colors.teal, Colors.green, Colors.blue, Colors.black, Colors.orange];
 
-  Widget getStatsResponseWidget(StatsBloc statsBloc) {
     return StreamBuilder<StatisticsState>(
         initialData: StatisticsState.initial(),
         stream: statsBloc.statisticsStream,
         builder: (BuildContext context, AsyncSnapshot<StatisticsState> snapshot) {
+          int index = new Random().nextInt(colors.length);
+          return Column(
+            children: <Widget>[
+              Text(
+                'Sum: ${snapshot.data.sum}',
+                style: TextStyle(
+                    color: colors[index],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0),
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              Text(
+                'Avg: ${snapshot.data.avg}',
+                style: TextStyle(
+                    color: colors[index],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0),
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              Text(
+                'Max: ${snapshot.data.max}',
+                style: TextStyle(
+                    color: colors[index],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0),
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              Text(
+                'Min: ${snapshot.data.min}',
+                style: TextStyle(
+                    color: colors[index],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0),
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              Text(
+                'Count: ${snapshot.data.count}',
+                style: TextStyle(
+                    color: colors[index],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0),
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  Widget getLoadingStatus() {
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          width: 100.0,
+          child: LinearProgressIndicator(),
+        ),
+        SizedBox(height: 20.0),
+        Text(
+          'Loading...',
+          style: TextStyle(
+              color: Colors.teal,
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0),
+        )
+      ],
+    );
+  }
+
+
+  Widget getStatsResponseWidget(StatsBloc statsBloc) {
+    List colors = [Colors.teal, Colors.green, Colors.blue, Colors.black, Colors.orange];
+
+    return StreamBuilder<StatisticsState>(
+        initialData: StatisticsState.initial(),
+        stream: statsBloc.statisticsStream,
+        builder: (BuildContext context, AsyncSnapshot<StatisticsState> snapshot) {
+          int index = new Random().nextInt(colors.length);
 
           return Column(
             children: <Widget>[
@@ -140,53 +227,33 @@ class StatsMainPage extends StatelessWidget {
               SizedBox(
                 height: 15.0,
               ),
-              Text(
-                'Sum: ${snapshot.data.sum}',
-                style: TextStyle(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0),
-              ),
-              SizedBox(
-                height: 15.0,
-              ),
-              Text(
-                'Avg: ${snapshot.data.avg}',
-                style: TextStyle(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0),
-              ),
-              SizedBox(
-                height: 15.0,
-              ),
-              Text(
-                'Max: ${snapshot.data.max}',
-                style: TextStyle(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0),
-              ),
-              SizedBox(
-                height: 15.0,
-              ),
-              Text(
-                'Min: ${snapshot.data.min}',
-                style: TextStyle(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0),
-              ),
-              SizedBox(
-                height: 15.0,
-              ),
-              Text(
-                'Count: ${snapshot.data.count}',
-                style: TextStyle(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0),
-              ),
+              StreamBuilder<bool>(
+              initialData: false,
+              stream: statsBloc.isLoadingStateStream,
+              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                return Stack(
+                  children: <Widget>[
+                    Center(
+                      child: Opacity(
+                        opacity: snapshot.data ? 0.0 : 1.0,
+                        child: getStatsNumbers(statsBloc),
+                      ),
+                    ),
+                    Center(
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(height: 60.0),
+                          AnimatedOpacity(
+                            duration: Duration(milliseconds: 300),
+                            opacity: snapshot.data ? 1.0 : 0.0,
+                            child: getLoadingStatus(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }),
               SizedBox(
                 height: 20.0,
               ),
