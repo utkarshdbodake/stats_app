@@ -13,7 +13,9 @@ class StatsDao {
   static Future postTransaction(TransactionState transactionState) async {
     return _httpClient
         .post(Uri.parse('$_statsAPI/transactions'),
-            body: json.encode(transactionState))
+            headers: { 'Content-type' : 'application/json' },
+            body: json.encode(TransactionState.toJSON(transactionState)))
+        .then((response) => print('Response status: ${response.statusCode}'))
         .catchError((error) => print('Error while postTransaction'));
   }
 

@@ -1,9 +1,16 @@
 
 class TransactionState {
-  final String amount;
-  final int timestamp = DateTime.now().millisecondsSinceEpoch;
+  final double amount;
+  final int timestamp;
 
-  TransactionState({ this.amount });
+  TransactionState({ this.amount, this.timestamp });
+
+  static Map<String, dynamic> toJSON(TransactionState transactionState) {
+    return {
+      'amount': transactionState.amount,
+      'timestamp': transactionState.timestamp,
+    };
+  }
 
   @override
   String toString() => '''
